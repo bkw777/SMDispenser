@@ -3,8 +3,8 @@
 // CC-BY-SA
 // Brian K. White - b.kenyon.w@gmail.com 2025
 
-//PRINT = "base";
-PRINT = "caddy";
+PRINT = "base";
+//PRINT = "caddy";
 //PRINT = "cap"; // end cap, only needed if spool_retainer_walls=false
 preview_fully_populated = true;
 
@@ -27,6 +27,10 @@ preview_fully_populated = true;
 // 8x2    SC70, large capacity 0805 caps
 // 8x1    1206 0805 0604 paper
 
+strip_width = 8;
+strip_thickness = 1;
+spool_diameter = 40;
+
 //strip_width = 8;
 //strip_thickness = 1;
 //spool_diameter = 60;
@@ -35,9 +39,9 @@ preview_fully_populated = true;
 //strip_thickness = 2;
 //spool_diameter = 60;
 
-strip_width = 16;
-strip_thickness = 3;
-spool_diameter = 120;
+//strip_width = 16;
+//strip_thickness = 3;
+//spool_diameter = 120;
 
 //strip_width = 25;
 //strip_thickness = 4;
@@ -67,8 +71,8 @@ fc = 0.2; // fitment clearance for everything else
 
 // Base
 base_length = 120;
-//base_tilt_angle = 0;
-base_tilt_angle = 15;
+base_tilt_angle = 0;
+//base_tilt_angle = 15;
 base_tilt_center = true;  // preserve center of gravity
 
 // End Cap
@@ -96,14 +100,14 @@ detent_height = clip_thickness/2 + fc*2;
 // TODO right-triangle math instead of this jank-ass
 base_extra_thickness = 
   (base_tilt_center ? spool_diameter/60 *
-    (base_tilt_angle<6  ? rail_width-2 :
+    (base_tilt_angle<6  ? rail_width-1 :
     base_tilt_angle<11 ? 6 :
     base_tilt_angle<16 ? 10 :
     base_tilt_angle<22 ? 15 :
     base_tilt_angle<28 ? 20 :
     base_tilt_angle<37 ? 30 :
     body_depth):
-  base_tilt_angle<6 ? rail_width-2 :
+  base_tilt_angle<6 ? rail_width-1 :
   0);
 
 ///////////////////////////////////////////////////////////////////////////////////
