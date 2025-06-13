@@ -3,10 +3,17 @@
 // CC-BY-SA
 // Brian K. White - b.kenyon.w@gmail.com 2025
 
-PRINT = "base";
+// to adjust fit, wobble, snap, etc:
+// look at these bvariables below:
+//   fitment_clearance = gap left between mating parts
+//   detent_height = how far the clip is forced to deflect
+//   clip_thickness = thickness (stiffness) of the clip
+
+//PRINT = "base";
 //PRINT = "caddy";
 //PRINT = "cap"; // end cap, only needed if spool_retainer_walls=false
-preview_fully_populated = true;
+PRINT = "testkit"; // caddy and stubby base for quick print for test fitting
+preview_fully_populated = false;
 
 // MAIN USER OPTIONS
 
@@ -68,38 +75,42 @@ spool_retainer_walls = true;
 spool_traps_depth = strip_thickness*6;
 
 slot_fc = 0.5; // fitment clearance just for the dispenser slot
-fc = 0.3; // fitment clearance for everything else
+fitment_clearance = (spool_diameter<50?0.1:0.2); // fitment clearance for everything else
 
 // Base
 base_length = 120;
 base_tilt_angle = 0;
 
 // End Cap
-// thin solid blank caddy shape used as end cap when trap=0
+// thin solid blank caddy shape used as end cap when spool_retainer_wall=false
 cap_thickness = 4;
 
 ///////////////////////////////////////////////////////////////////////////////////
 
 wall_thickness = 1;
-corner_radius = 3;
+corner_radius = spool_diameter/15;
 
 rail_width = spool_diameter/15;
 
 clip_thickness =
   spool_diameter<50 ? 1 :
-  spool_diameter>100 ? 3 :
   2;
 
-detent_height = clip_thickness/2 + fc*2;
+// this may be too aggressive depending on your printers accuracy
+// at printing the little J on the end of the clip
+detent_height = clip_thickness*0.75 + fitment_clearance*2;
+// little milder
+//detent_height = clip_thickness/2 + fitment_clearance*2;
 
 ///////////////////////////////////////////////////////////////////////////////////
 
 
 e = 0.01;
-//$fn=72;
+$fn=72;
 $fa = 6;
 $fs = 0.5;
 
+fc = fitment_clearance; // abreviation just because it's used a lot
 body_width = spool_diameter + wall_thickness*2;
 body_depth = body_width;
 body_height = wall_thickness + slot_fc + strip_width + slot_fc + (spool_retainer_walls?wall_thickness:0);
@@ -164,7 +175,17 @@ module bottom_rail (h,f=false) {
   translate([brx-brr-x,-body_depth/2-fc-rail_width/2,0]) cube([x+rail_width+x,bra+brb,h]);
 
   // chamfer
-  if (f) translate([brx-brr+rail_width/2,-body_depth/2-e,0]) rotate([0,0,45]) translate([-rail_width/2,-rail_width/2,0]) cube([rail_width,rail_width,h]);
+  if (f) {
+    translate([brx-brr+rail_width/2,-body_depth/2-e,0]) rotate([0,0,45]) translate([-rail_width/2,-rail_width/2,0]) cube([rail_width,rail_width,h]);
+    // round the corner helps print assembeled in-place
+    //r = corner_radius;
+    r = corner_radius/2;
+    //r = wall_thickness;
+    translate([-r+brx-brr-x+e,r-body_depth/2-e,0]) difference() {
+      translate([0,-r,-1]) cube([r,r,h+2]);
+      translate([0,0,-2]) cylinder(r=r,h=h+4);
+    }
+  }
 
   // compliance slot
   // only used on female part
@@ -258,9 +279,9 @@ module caddy(solid=0) {
   if (!cap) %spool();
 }
 
+bsr = rail_width/4;
+bsy = -body_depth/2+bsr-fc-rail_width;
 module base (l=120) {
-
-  sr = rail_width/4;
 
   difference() {
     group() {
@@ -279,8 +300,8 @@ module base (l=120) {
         ty = (base_tilt_angle?body_depth/2-corner_radius:0);
         translate([tx,-ty,0]) rotate([0,0,base_tilt_angle]) translate([-tx,ty,0])
           mirror_copy([1,0,0])
-            translate([body_width/2-sr,-body_depth/2+sr-fc-rail_width,0])
-              cylinder(r=sr,h=l);
+            translate([body_width/2-bsr,bsy,0])
+              cylinder(r=bsr,h=l);
       }
 
 
@@ -316,3 +337,10 @@ if ($preview || is_undef(PRINT)) {
 else if (PRINT=="caddy") caddy();
 else if (PRINT=="cap") caddy(solid=cap_thickness);
 else if (PRINT=="base") translate([0,body_depth/2,0]) base(l=base_length);
+else if (PRINT=="testkit") {
+  caddy();
+  translate([body_width/2+rail_width*2+base_tilt_angle/3,0,0])
+  rotate([0,0,-90-base_tilt_angle])
+  translate([0,rail_width+fc+body_depth/2,0])
+    base(l=body_height*1.5);
+}
