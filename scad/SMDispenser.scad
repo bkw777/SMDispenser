@@ -10,9 +10,9 @@
 //   clip_thickness = thickness (stiffness) of the clip
 
 //PRINT = "base";
-//PRINT = "caddy";
+PRINT = "caddy";
 //PRINT = "cap"; // end cap, only needed if spool_retainer_walls=false
-PRINT = "testkit"; // caddy and stubby base for quick print for test fitting
+//PRINT = "testkit"; // caddy and stubby base for quick print for test fitting
 preview_fully_populated = false;
 
 // MAIN USER OPTIONS
@@ -35,26 +35,42 @@ preview_fully_populated = false;
 // 32x4   32SOP
 // 33x3   48TSOP 28TSOP-II
 
+// most 0805 paper strips are 8mmx1mm
 //strip_width = 8;
 //strip_thickness = 1;
 //spool_diameter = 40;
 
+// some 0805 components are taller than 1mm
+//strip_width = 8;
+//strip_thickness = 2;
+//spool_diameter = 40;
+
+// 0604 0805 1206
+//strip_width = 8;
+//strip_thickness = 1;
+//spool_diameter = 60;
+
+// 0805 1206
 strip_width = 8;
-strip_thickness = 1;
+strip_thickness = 2;
 spool_diameter = 60;
 
+// 14TSSOP 16TSSOP
 //strip_width = 12;
 //strip_thickness = 2;
 //spool_diameter = 60;
 
+// 14SO 14SOIC 16SO 16SOIC
 //strip_width = 16;
 //strip_thickness = 3;
 //spool_diameter = 120;
 
+// 44VQFP 28TSOP-I 28SOIC
 //strip_width = 25;
 //strip_thickness = 4;
 //spool_diameter = 120;
 
+// 32SOP 48TSOP 28TSOP-II
 //strip_width = 33;
 //strip_thickness = 4;
 //spool_diameter = 120;
@@ -198,7 +214,7 @@ module bottom_rail (h,f=false) {
 
     // cheeseball auto scaling depth of cut
     // scales with compliant part thickness, width, deflection
-    p = b + (h+clip_thickness+detent_height)/2; // pending top
+    p = b + (h+detent_height)*(clip_thickness/4); // pending top
 
     // max allowable depth of cut leaving wall_thickness to spool
     c = spool_radius + wall_thickness + r; // diagonal distance center-center

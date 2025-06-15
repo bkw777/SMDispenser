@@ -4,6 +4,6 @@
 all:
 	${MAKE} -C scad clean
 	${MAKE} -C scad -j4
-#	mv -vf scad/*.png pics/
+	mv -vf scad/*.png pics/
 	rm -f stl/*.stl
 	mv -vf scad/*.stl stl/
